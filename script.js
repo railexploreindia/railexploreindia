@@ -1,27 +1,94 @@
-const activities=[
-{name:"Delhi – Mumbai Rajdhani",type:"Passenger",route:"Indian Railways",duration:"2h 15m",difficulty:"Medium",size:"46 MB",icon:"🚆"},
-{name:"Konkan Railway Freight",type:"Freight",route:"Konkan Railway",duration:"1h 50m",difficulty:"Medium",size:"38 MB",icon:"🚛"},
-{name:"Chennai – Bengaluru Express",type:"Passenger",route:"Southern Railway",duration:"1h 40m",difficulty:"Easy",size:"42 MB",icon:"🚉"},
-{name:"Shunting in Bhopal Yard",type:"Shunting",route:"Central Railway",duration:"45 min",difficulty:"Easy",size:"24 MB",icon:"🚂"},
-{name:"Darjeeling Himalayan Excursion",type:"Special",route:"Mountain Railway",duration:"1h 20m",difficulty:"Medium",size:"31 MB",icon:"♨"},
-{name:"Mumbai Suburban Timetable",type:"Timetable",route:"Central Railway",duration:"3h 00m",difficulty:"Hard",size:"52 MB",icon:"▣"},
-{name:"Howrah – Delhi Mail",type:"Passenger",route:"Eastern / Northern",duration:"2h 35m",difficulty:"Hard",size:"48 MB",icon:"🚆"},
-{name:"Jaipur Goods Yard",type:"Freight",route:"North Western Railway",duration:"1h 10m",difficulty:"Easy",size:"29 MB",icon:"🚛"}
-];
-function card(a){return `<article class="card"><div class="card-img">${a.icon}</div><div class="card-body"><h3>${a.name}<br><small>(OR Activity)</small></h3><div class="meta">📍 ${a.route}<br>◷ Duration: ~${a.duration}<br>▥ Difficulty: ${a.difficulty}</div><button class="download" onclick="downloadActivity('${a.name}')">⬇ Download (${a.size})</button></div></article>`}
-function render(list,target){document.getElementById(target).innerHTML=list.map(card).join("");}
-function filterActivities(){
- const q=((document.getElementById("heroSearch")?.value||"")+" "+(document.getElementById("navSearch")?.value||"")).toLowerCase();
- const cat=document.getElementById("categoryFilter")?.value||"";
- const dif=document.getElementById("difficultyFilter")?.value||"";
- const list=activities.filter(a=>(!q||[a.name,a.type,a.route].join(" ").toLowerCase().includes(q))&&(!cat||a.type===cat)&&(!dif||a.difficulty===dif));
- render(list,"allCards"); document.getElementById("resultCount").textContent=`${list.length} activities`;
+// RailExploreIndia.in — static-site interactions. Account/upload/views require backend setup.
+const activities = [{
+  id: "nandankanan-12815",
+  name: "12815 Puri – Anand Vihar Terminal Nandankanan Express",
+  type: "Passenger",
+  route: "ECR (as recorded in the supplied ACT file)",
+  duration: "9h 30m (ACT duration field)",
+  difficulty: "Not specified",
+  size: "170 KB",
+  icon: "🚆",
+  file: "downloads/12815-Nandankanan-Express-OpenRails.zip",
+  views: null,
+  description: "Open Rails activity package supplied by the site owner. Includes the ACT, PATHS, SERVICES and TRF files."
+}];
+
+function card(a) {
+  const viewLabel = a.views === null ? "Views: tracking not enabled yet" : `👁 ${a.views.toLocaleString()} views`;
+  return `<article class="card">
+    <div class="card-image" aria-hidden="true">${a.icon}</div>
+    <div class="card-body">
+      <h3>${escapeHTML(a.name)}</h3>
+      <p>${escapeHTML(a.description)}</p>
+      <div class="meta">📍 ${escapeHTML(a.route)}<br>◷ Duration: ${escapeHTML(a.duration)}<br>◉ Difficulty: ${escapeHTML(a.difficulty)}<br>👁 ${viewLabel}</div>
+      <a class="download" href="${a.file}" download>⬇ Download activity package (${a.size})</a>
+    </div>
+  </article>`;
 }
-function setCategory(cat){document.getElementById("categoryFilter").value=cat==="Route"?"":cat;document.getElementById("activities").scrollIntoView({behavior:"smooth"});filterActivities();}
-function downloadActivity(name){openModal(`<h2>Download: ${name}</h2><p>This demo site is ready for real download links. Connect your ZIP/activity files to this button when deploying.</p><button class="yellow" onclick="closeModal()">Close</button>`)}
-function uploadActivity(){openModal("<h2>Upload an Activity</h2><p>Creator uploads can be connected to your preferred storage/database. The front-end is ready for an upload workflow.</p><button class='yellow' onclick='closeModal()'>Close</button>")}
-function showGuide(){openModal("<h2>Open Rails Activity Installation</h2><ol><li>Download the activity package.</li><li>Extract it according to the package instructions.</li><li>Install any required route, consist, locomotive and environment files.</li><li>Open the route in Open Rails and select the activity.</li></ol><p><b>Tip:</b> Always read the activity's included README and requirements.</p>")}
-function community(){openModal("<h2>RailExploreIndia Community</h2><p>Connect this button to your forum, Discord, or community page when you're ready.</p>")}
-function openModal(x){document.getElementById("modalBody").innerHTML=x;document.getElementById("modal").style.display="flex"}
-function closeModal(){document.getElementById("modal").style.display="none"}
-render(activities.slice(0,4),"cards"); filterActivities();
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function render(list, target) {
+  const el = document.getElementById(target);
+  if (!el) return;
+  el.innerHTML = list.map(card).join("");
+}
+function filterActivities() {
+  const q = [
+    document.getElementById("heroSearch")?.value || "",
+    document.getElementById("navSearch")?.value || "",
+    document.getElementById("listSearch")?.value || ""
+  ].join(" ").trim().toLowerCase();
+  const cat = document.getElementById("categoryFilter")?.value || "";
+  const dif = document.getElementById("difficultyFilter")?.value || "";
+  const list = activities.filter(a =>
+    (!q || [a.name,a.type,a.route,a.description].join(" ").toLowerCase().includes(q)) &&
+    (!cat || a.type === cat) &&
+    (!dif || a.difficulty === dif)
+  );
+  render(list, "allCards");
+  const count = document.getElementById("resultCount");
+  if (count) count.textContent = `${list.length} published ${list.length === 1 ? "activity" : "activities"}`;
+  const side = document.getElementById("sideActivity");
+  const empty = document.getElementById("sideEmpty");
+  if (side) side.innerHTML = list.map(a => `<div class="side-activity"><div class="side-thumb">🚆</div><div class="side-info"><strong>${escapeHTML(a.name)}</strong><small>Passenger Activity · Views not yet tracked</small><a href="${a.file}" download>Download package</a></div></div>`).join("");
+  if (empty) empty.classList.toggle("hidden", list.length > 0);
+}
+function setCategory(cat) {
+  const filter = document.getElementById("categoryFilter");
+  if (filter) filter.value = cat === "Route" ? "" : cat;
+  document.getElementById("activities")?.scrollIntoView({behavior:"smooth"});
+  filterActivities();
+}
+function openModal(html) {
+  document.getElementById("modalBody").innerHTML = html;
+  document.getElementById("modal").style.display = "flex";
+}
+function closeModal() { document.getElementById("modal").style.display = "none"; }
+function showAccount(mode) {
+  const title = mode === "login" ? "Login" : "Create your account";
+  openModal(`<h2>${title}</h2>
+    <p class="note">Account registration is not active yet. This GitHub Pages version is the website frontend; Supabase authentication must be connected before accounts can be created or used.</p>
+    <label>Email<input type="email" placeholder="you@example.com" disabled></label>
+    <label>Password<input type="password" placeholder="Password" disabled></label>
+    <button class="primary" disabled>Coming after backend setup</button>`);
+}
+function showUpload() {
+  openModal(`<h2>Upload an Open Rails Activity</h2>
+    <p class="note">User uploads will be enabled after the secure storage and account backend is connected. Submitted files will stay pending until an admin approves them.</p>
+    <label>Activity name<input disabled placeholder="Enter activity name"></label>
+    <label>Route / description<textarea disabled placeholder="Describe your activity"></textarea></label>
+    <label>Activity ZIP<input type="file" disabled></label>
+    <button class="primary" disabled>Upload for admin approval</button>`);
+}
+function showGuide() {
+  openModal(`<h2>Installing an Open Rails activity</h2>
+    <ol><li>Download and extract the complete activity package.</li><li>Read the activity documentation, if supplied.</li><li>Install the required route, rolling stock, consists and other dependencies.</li><li>Place the ACT, PATHS, SERVICES and TRAFFIC files in their matching folders under the route's Open Rails/MSTS folder structure.</li><li>Open Open Rails and select the activity.</li></ol>
+    <p class="note">Exact installation locations depend on your route and Open Rails installation. Check all required dependencies before running.</p>`);
+}
+function showCommunity() {
+  openModal(`<h2>RailExploreIndia Community</h2><p>A community/forum destination has not been configured yet. This panel is a placeholder until an official community link is provided.</p>`);
+}
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+render(activities, "featuredCards");
+filterActivities();
