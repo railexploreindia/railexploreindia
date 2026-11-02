@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="RailExploreIndia.in — Open Rails activities for Indian railway simulation.">
+  <title>RailExploreIndia.in — Open Rails Activities</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <div class="train-mark">🚆</div>
+    <div><div class="brand-name">RailExplore<span>India</span><b>.in</b></div>
+    <small>Explore • Download • Drive</small></div>
+  </div>
+  <div class="top-title"><strong>Open Rails Activities</strong><small>Explore the Indian Railways and beyond in Open Rails</small></div>
+  <div class="account"><button class="ghost">Login / Register</button><button class="yellow" onclick="uploadActivity()">⬆ Upload Activity</button></div>
+</header>
+
+<nav class="nav">
+  <div class="navlinks">
+    <a class="active" href="#home">⌂ Home</a>
+    <a href="#activities">♟ Activities</a><a href="#routes">⤨ Routes</a><a href="#locomotives">🚆 Locomotives</a>
+    <a href="#regions">📍 By Region</a><a href="#tutorials">✉ Tutorials</a><a href="#about">ⓘ About Us</a><a href="#contact">☎ Contact</a>
+  </div>
+  <div class="nav-search"><input id="navSearch" placeholder="Search activities..." oninput="filterActivities()"><button>⌕</button></div>
+</nav>
+
+<main id="home">
+<section class="hero">
+  <img src="hero-reference.png" alt="" class="hero-bg">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1>RailExplore<span>India</span><b>.in</b></h1>
+    <h2>Your One-Stop Destination for<br>Open Rails Activities</h2>
+    <p>Find, download and enjoy a wide range of Open Rails activities — from iconic Indian routes to global masterpieces!</p>
+    <div class="big-search"><input id="heroSearch" placeholder="Search for activities, routes, or locomotives..." oninput="filterActivities()"><button onclick="document.querySelector('#activities').scrollIntoView({behavior:'smooth'})">Search</button></div>
+  </div>
+</section>
+
+<section class="categories">
+  <button onclick="setCategory('Passenger')">🚉<b>Passenger<br>Activities</b></button>
+  <button onclick="setCategory('Freight')">🚛<b>Freight<br>Activities</b></button>
+  <button onclick="setCategory('Shunting')">🚂<b>Shunting<br>Activities</b></button>
+  <button onclick="setCategory('Special')">♨<b>Special /<br>Excursion</b></button>
+  <button onclick="setCategory('Timetable')">▣<b>Timetable<br>Activities</b></button>
+  <button onclick="setCategory('Route')">🌐<b>By Route<br>(Indian & Global)</b></button>
+</section>
+
+<section class="content-grid">
+  <div>
+    <div class="section-head"><h2>★ Featured Activities</h2><a href="#activities">View All →</a></div>
+    <div id="cards" class="cards"></div>
+  </div>
+  <aside>
+    <div class="panel"><h3>📣 Latest Updates</h3>
+      <p><b>Nov 02, 2026</b> — New activity listings added</p>
+      <p><b>Oct 28, 2026</b> — Updated Delhi–Mumbai activity</p>
+      <p><b>Oct 20, 2026</b> — New Indian Railways route pack</p>
+    </div>
+    <div class="panel" id="tutorials"><h3>📖 Installation Guide</h3><p>Step-by-step guide to install Open Rails activities.</p><button class="yellow" onclick="showGuide()">Read Guide →</button></div>
+    <div class="panel"><h3>👥 Join Our Community</h3><p>Share your creations and discuss Open Rails.</p><button class="yellow" onclick="community()">Visit Forum →</button></div>
+  </aside>
+</section>
+
+<section id="activities" class="all">
+  <div class="section-head"><h2>All Activities</h2><span id="resultCount"></span></div>
+  <div class="filters">
+    <select id="categoryFilter" onchange="filterActivities()"><option value="">All types</option><option>Passenger</option><option>Freight</option><option>Shunting</option><option>Special</option><option>Timetable</option></select>
+    <select id="difficultyFilter" onchange="filterActivities()"><option value="">Any difficulty</option><option>Easy</option><option>Medium</option><option>Hard</option></select>
+  </div>
+  <div id="allCards" class="cards"></div>
+</section>
+
+<footer id="contact">
+  <div class="footer-brand">🚆 <b>RailExplore<span>India</span><i>.in</i></b></div>
+  <div>Home &nbsp; | &nbsp; Activities &nbsp; | &nbsp; Tutorials &nbsp; | &nbsp; FAQ &nbsp; | &nbsp; Terms of Use &nbsp; | &nbsp; Privacy Policy &nbsp; | &nbsp; Contact</div>
+  <em>Let's keep the rails alive in Open Rails...</em>
+</footer>
+</main>
+
+<div class="modal" id="modal"><div class="modal-box"><button class="close" onclick="closeModal()">×</button><div id="modalBody"></div></div></div>
+<script src="script.js"></script>
+</body></html>
